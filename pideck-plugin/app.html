@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8" />
+	<title>会话状态桥</title>
+	<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+	<main id="root">
+		<header>
+			<h1>会话状态桥</h1>
+			<button id="refresh" type="button">刷新</button>
+		</header>
+		<p id="meta" class="meta"></p>
+		<section id="octssh" class="card">
+			<h2>OctSSH 本会话免确认</h2>
+			<p id="octssh-body" class="body"></p>
+		</section>
+		<section id="git" class="card">
+			<h2>Git 摘要</h2>
+			<p id="git-body" class="body"></p>
+		</section>
+	</main>
+	<script src="app.js"></script>
+</body>
+</html>

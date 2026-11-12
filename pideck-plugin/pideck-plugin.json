@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "apiVersion": 1,
+  "id": "pi-status-bridge",
+  "name": "会话状态桥",
+  "version": "0.1.0",
+  "description": "按来源 Pi 会话显示 OctSSH 本会话免确认主机与 Git 摘要。只读：数据来自本机回环 pi-status-bridge 扩展，无任何执行或审批接口。",
+  "permissions": ["network.local"],
+  "network": {
+    "localPorts": [47831, 47832, 47833, 47834, 47835, 47836, 47837, 47838]
+  },
+  "contributes": {
+    "panels": [
+      {
+        "id": "main",
+        "title": "会话状态桥",
+        "entry": "app.html",
+        "icon": "activity",
+        "presentation": "popover"
+      }
+    ],
+    "commands": [{ "id": "open", "title": "打开会话状态桥", "panelId": "main" }]
+  }
+}

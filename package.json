@@ -1,0 +1,41 @@
+{
+  "name": "pi-status-bridge",
+  "version": "0.1.0",
+  "description": "Pi 扩展 + PiDeck Host Plugin：通过只读回环 HTTP 桥接当前会话的 OctSSH 免确认状态与 Git 摘要",
+  "keywords": [
+    "pi-package",
+    "pi",
+    "pi-extension",
+    "pideck"
+  ],
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test test/*.test.ts",
+    "check": "npm run typecheck && npm test"
+  },
+  "pi": {
+    "extensions": ["./extensions/*.ts"]
+  },
+  "main": "extensions/status-bridge.ts",
+  "files": [
+    "extensions",
+    "src",
+    "pideck-plugin",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-coding-agent": { "optional": true }
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "^0.81.1",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  }
+}
