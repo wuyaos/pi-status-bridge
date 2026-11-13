@@ -68,6 +68,20 @@ export interface BridgeStateResponse {
     /** 采集失败原因（如非 git 仓库）。 */
     error?: string;
   };
+  /** Ralph 循环状态（只读 <cwd>/.ralph/*.state.json 采集，与 Ralph 扩展同源）。 */
+  ralph: RalphSummary;
+}
+
+/** Ralph 循环摘要（面板只展示这些，不包含任务正文）。 */
+export interface RalphSummary {
+  /** <cwd>/.ralph 目录可读。 */
+  available: boolean;
+  loops: Array<{
+    name: string;
+    status: "active" | "paused" | "completed";
+    iteration: number;
+    maxIterations: number;
+  }>;
 }
 
 /** 解析 /state 响应的最小校验（插件侧也用同一形状）。 */

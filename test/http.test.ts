@@ -42,14 +42,15 @@ test("GET /health 200；其他路径 404；POST 405", async () => {
   }
 });
 
-test("端口冲突时自动顺延到下一个端口", async () => {
-  const a = new BridgeServer(new BridgeState());
-  const b = new BridgeServer(new BridgeState());
+test("端口冲突时自动顺延到下一个端口（注入独立端口段，不依赖环境）", async () => {
+  const ports = [49701, 49702];
+  const a = new BridgeServer(new BridgeState(), ports);
+  const b = new BridgeServer(new BridgeState(), ports);
   try {
     await a.start();
     await b.start();
     assert.notEqual(a.port, b.port);
-    assert.equal([47831, 47832].includes(a.port), true);
+    assert.equal(ports.includes(a.port), true);
   } finally {
     await a.stop();
     await b.stop();

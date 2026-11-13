@@ -15,21 +15,23 @@ export class BridgeServer {
   private state: BridgeState;
   port = 0;
 
-  constructor(state: BridgeState) {
+  private ports: readonly number[];
+  constructor(state: BridgeState, ports: readonly number[] = BRIDGE_PORTS) {
     this.state = state;
+    this.ports = ports;
   }
 
-  /** 在 BRIDGE_PORTS 里绑定第一个空闲端口；全部占用则抛错。 */
+  /** 在端口段里绑定第一个空闲端口；全部占用则抛错。测试可注入独立端口段。 */
   start(): Promise<void> {
     return new Promise((resolve, reject) => {
       let lastError: Error | null = null;
       let i = 0;
       const tryNext = () => {
-        if (i >= BRIDGE_PORTS.length) {
-          reject(lastError ?? new Error(`端口段 ${BRIDGE_PORTS[0]}-${BRIDGE_PORTS[BRIDGE_PORTS.length - 1]} 全部被占用`));
+        if (i >= this.ports.length) {
+          reject(lastError ?? new Error(`端口段 ${this.ports[0]}-${this.ports[this.ports.length - 1]} 全部被占用`));
           return;
         }
-        const port = BRIDGE_PORTS[i++];
+        const port = this.ports[i++];
         const server = createServer((req, res) => this.handle(req, res));
         server.on("error", (error: NodeJS.ErrnoException) => {
           server.close();

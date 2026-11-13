@@ -37,15 +37,18 @@ function fmtTime(ms) {
 
 function render(entries) {
 	// 无存活来源：直接清空旧显示，不保留过期内容。
-	el("meta").textContent = entries.length
-		? `存活桥接来源 ${entries.length} 个（并列展示，不代表当前 PiDeck 聊天）`
-		: "未发现存活的 pi-status-bridge 桥接服务。请确认 Pi 会话内已安装 pi-status-bridge 扩展且会话已启动。";
+	el("meta").textContent = "";
+	el("meta").hidden = true;
 
 	const oBody = el("octssh-body");
 	const gBody = el("git-body");
 	oBody.textContent = "";
+	const rBody = el("ralph-body");
 	gBody.textContent = "";
+	rBody.textContent = "";
+	el("octssh").hidden = true;
 	el("git").hidden = true;
+	el("ralph").hidden = true;
 	if (!entries.length) {
 		oBody.className = "body muted";
 		gBody.className = "body muted";
@@ -59,11 +62,9 @@ function render(entries) {
 		const b = state.bridge;
 		const label = `来源 piSession ${String(b.piSessionId).slice(0, 8)} · 端口 ${port}`;
 		const o = state.octssh;
-		if (o.available) {
-			warn = warn || o.aliases.length > 0;
-			octsshParts.push(`${label}\n  ${o.aliases.length ? `⚠ 免确认：${o.aliases.join("、")}` : "未开启免确认"}`);
-		} else {
-			octsshParts.push(`${label}\n  未安装 OctSSH 或状态未上报`);
+		if (o.available && o.aliases.length > 0) {
+			warn = true;
+			octsshParts.push(`${label}\n  ⚠ 免确认：${o.aliases.join("、")}`);
 		}
 		const g = state.git;
 		if (!g.error) {
@@ -74,9 +75,22 @@ function render(entries) {
 		}
 	}
 	oBody.textContent = octsshParts.join("\n");
+	el("octssh").hidden = octsshParts.length === 0;
 	oBody.className = "body " + (warn ? "warn" : "muted");
 	gBody.textContent = gitParts.join("\n");
 	el("git").hidden = gitParts.length === 0;
+	const ralphParts = [];
+	for (const { state } of entries) {
+		const r = state.ralph;
+		if (!r || !r.available || r.loops.length === 0) continue;
+		ralphParts.push(`来源 piSession ${String(state.bridge.piSessionId).slice(0, 8)}`);
+		for (const lp of r.loops) {
+			ralphParts.push(`  ${lp.status === "active" ? "▶" : "⏸"} ${lp.name} · 第 ${lp.iteration}/${lp.maxIterations || "?"} 轮 · ${lp.status}`);
+		}
+	}
+	rBody.textContent = ralphParts.join("\n");
+	el("ralph").hidden = ralphParts.length === 0;
+	rBody.className = "body";
 	gBody.className = "body";
 }
 

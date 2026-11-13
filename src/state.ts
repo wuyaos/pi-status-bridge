@@ -1,6 +1,7 @@
 import type { BridgeStateResponse, OctsshApprovalEvent } from "./types.ts";
 import { OCTSSH_EVENT_CHANNEL } from "./types.ts";
 import { collectGitStatus } from "./git.ts";
+import { collectRalphLoops } from "./ralph.ts";
 import { GIT_REFRESH_THROTTLE_MS } from "./types.ts";
 
 /**
@@ -17,6 +18,7 @@ export class BridgeState {
   private octsshAliases: string[] = [];
   private octsshUpdatedAt = 0;
 
+  private ralph = { available: false, loops: [] as BridgeStateResponse["ralph"]["loops"] };
   private git: BridgeStateResponse["git"] | null = null;
   private gitPending: Promise<void> | null = null;
   private lastGitRefreshAt = 0;
@@ -79,6 +81,7 @@ export class BridgeState {
   /** 当前快照；git 从未采集过时返回 null（HTTP 层补一次采集）。 */
   snapshot(): BridgeStateResponse | null {
     if (!this.piSessionId || !this.git) return null;
+    this.ralph = collectRalphLoops(this.cwd);
     return {
       ok: true,
       bridge: {
@@ -93,6 +96,7 @@ export class BridgeState {
         updatedAt: this.octsshUpdatedAt,
       },
       git: { ...this.git },
+      ralph: this.ralph,
     };
   }
 }
